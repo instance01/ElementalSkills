@@ -30,6 +30,7 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityTameEvent;
 import org.bukkit.event.inventory.BrewEvent;
 import org.bukkit.event.inventory.FurnaceExtractEvent;
+import org.bukkit.event.player.PlayerEggThrowEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerShearEntityEvent;
@@ -71,6 +72,10 @@ public class Main extends JavaPlugin implements Listener {
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (cmd.getName().equalsIgnoreCase("skill")) {
 			if (args.length > 0) {
+				if(args[0].equalsIgnoreCase("reload")){
+					this.reloadConfig();
+					return true;
+				}
 				Skills.displayPlayerData(sender, args[0]);
 			} else {
 				if (sender instanceof Player) {
@@ -94,9 +99,6 @@ public class Main extends JavaPlugin implements Listener {
 			}
 			return true;
 		} else if (cmd.getName().equalsIgnoreCase("highscore")) {
-			// Skills.getFullScore(p);
-			// TODO highscore
-
 			if (sender instanceof Player) {
 				Player p = (Player) sender;
 
@@ -278,6 +280,15 @@ public class Main extends JavaPlugin implements Listener {
 	public void onShear(PlayerShearEntityEvent event) {
 		Player p = event.getPlayer();
 		Skills.addXP(p, -2, "wildlife");
+	}
+	
+	// Wildlife
+	@EventHandler
+	public void onEggHatch(PlayerEggThrowEvent event){
+		Player p = event.getPlayer();
+		if(event.isHatching()){
+			Skills.addXP(p, -2, "wildlife");
+		}
 	}
 
 }

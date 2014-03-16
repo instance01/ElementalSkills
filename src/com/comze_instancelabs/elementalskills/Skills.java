@@ -71,8 +71,10 @@ public class Skills {
 	public static void addXP(Player p, int amplifier, String type){
 		String element = getPlayerElement(p);
 		int extra_for_element = 0;
-		if(typeelements.get(element).containsKey(type)){
-			extra_for_element = typeelements.get(element).get(type);
+		if(!element.equalsIgnoreCase("default")){
+			if(typeelements.get(element).containsKey(type)){
+				extra_for_element = typeelements.get(element).get(type);
+			}
 		}
 		int lv = getPlayerLevel(p, type);
 		int oldxp = getPlayerXP(p, type);
@@ -114,7 +116,7 @@ public class Skills {
 		f.put(type, getPlayerLevel(p, type) + 1);
 		plvl.put(p.getName(), f);
 		saveAllPlayerData(p);
-		p.sendMessage(ChatColor.AQUA + type + ": Level" + Integer.toString(getPlayerLevel(p, type)));
+		p.sendMessage(ChatColor.AQUA + type.substring(0, 1).toUpperCase() + type.substring(1, type.length()) + ": Level " + ChatColor.GOLD + Integer.toString(getPlayerLevel(p, type)));
 	}
 	
 	public static void addPlayerMoney(Player p, int reward){
@@ -163,6 +165,10 @@ public class Skills {
 			}
 			plvl.put(p.getName(), lv);
 			pxp.put(p.getName(), xp);
+			if(!getConfig().isSet(p.getName() + ".elem")){
+				getConfig().set(p.getName() + ".elem", "default");
+				m.saveConfig();
+			}
 			pelem.put(p.getName(), getConfig().getString(p.getName() + ".elem"));
 		}else{
 			for(String t : alltypes){
