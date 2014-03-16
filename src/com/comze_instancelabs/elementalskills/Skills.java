@@ -5,10 +5,15 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Set;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.scoreboard.DisplaySlot;
+import org.bukkit.scoreboard.Objective;
+import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.ScoreboardManager;
 
 public class Skills {
 	public static Main m;
@@ -130,17 +135,19 @@ public class Skills {
 			HashMap<String, Integer> lv = new HashMap<String, Integer>();
 			HashMap<String, Integer> xp = new HashMap<String, Integer>();
 			
+			sender.sendMessage(ChatColor.AQUA + "-- Elements --");
+			//TODO Elements
 			sender.sendMessage(ChatColor.AQUA + "-- Skills --");
-			sender.sendMessage(ChatColor.AQUA + "Mining" + ChatColor.DARK_GREEN + " ◆ " + Integer.toString(getConfig().getInt(p + ".mining.lv")));
-			sender.sendMessage(ChatColor.AQUA + "Alchemy" + ChatColor.GOLD + " ◆ " + Integer.toString(getConfig().getInt(p + ".alchemy.lv")));
-			sender.sendMessage(ChatColor.AQUA + "Melee" + ChatColor.DARK_RED + " ◆ " + Integer.toString(getConfig().getInt(p + ".melee.lv")));
-			sender.sendMessage(ChatColor.AQUA + "Archery" + ChatColor.YELLOW + " ◆ " + Integer.toString(getConfig().getInt(p + ".archery.lv")));
-			sender.sendMessage(ChatColor.AQUA + "Travel" + ChatColor.BLUE + " ◆ " + Integer.toString(getConfig().getInt(p + ".travel.lv")));
-			sender.sendMessage(ChatColor.AQUA + "Wildlife" + ChatColor.DARK_AQUA + " ◆ " + Integer.toString(getConfig().getInt(p + ".wildlife.lv")));
-			sender.sendMessage(ChatColor.AQUA + "Eating" + ChatColor.DARK_BLUE + " ◆ " + Integer.toString(getConfig().getInt(p + ".eating.lv")));
-			sender.sendMessage(ChatColor.AQUA + "Herbalism" + ChatColor.GREEN + " ◆ " + Integer.toString(getConfig().getInt(p + ".herbalism.lv")));
-			sender.sendMessage(ChatColor.AQUA + "Enchanting" + ChatColor.DARK_PURPLE + " ◆ " + Integer.toString(getConfig().getInt(p + ".enchanting.lv")));
-			sender.sendMessage(ChatColor.AQUA + "Karma" + ChatColor.RED + " ◆ " + Integer.toString(getConfig().getInt(p + ".karma.lv")));
+			sender.sendMessage(ChatColor.GRAY + Integer.toString(getConfig().getInt(p + ".mining.lv")) + ChatColor.DARK_GREEN + " ◆ " + ChatColor.AQUA + "Mining");
+			sender.sendMessage(ChatColor.GRAY + Integer.toString(getConfig().getInt(p + ".alchemy.lv")) + ChatColor.GOLD + " ◆ " + ChatColor.AQUA + "Alchemy");
+			sender.sendMessage(ChatColor.GRAY + Integer.toString(getConfig().getInt(p + ".melee.lv")) + ChatColor.DARK_RED + " ◆ " + ChatColor.AQUA + "Melee");
+			sender.sendMessage(ChatColor.GRAY + Integer.toString(getConfig().getInt(p + ".archery.lv")) + ChatColor.YELLOW + " ◆ " + ChatColor.AQUA + "Archery");
+			sender.sendMessage(ChatColor.GRAY + Integer.toString(getConfig().getInt(p + ".travel.lv")) + ChatColor.BLUE + " ◆ " + ChatColor.AQUA + "Travel");
+			sender.sendMessage(ChatColor.GRAY + Integer.toString(getConfig().getInt(p + ".wildlife.lv")) + ChatColor.DARK_AQUA + " ◆ " + ChatColor.AQUA + "Wildlife");
+			sender.sendMessage(ChatColor.GRAY + Integer.toString(getConfig().getInt(p + ".eating.lv")) + ChatColor.DARK_BLUE + " ◆ " + ChatColor.AQUA + "Eating");
+			sender.sendMessage(ChatColor.GRAY + Integer.toString(getConfig().getInt(p + ".herbalism.lv")) + ChatColor.GREEN + " ◆ " + ChatColor.AQUA + "Herbalism");
+			sender.sendMessage(ChatColor.GRAY + Integer.toString(getConfig().getInt(p + ".enchanting.lv")) + ChatColor.DARK_PURPLE + " ◆ " + ChatColor.AQUA + "Enchanting");
+			sender.sendMessage(ChatColor.GRAY + Integer.toString(getConfig().getInt(p + ".karma.lv")) + ChatColor.RED + " ◆ " + ChatColor.AQUA + "Karma");
 			
 			int c = 0;
 			for(String t : types){
@@ -148,7 +155,7 @@ public class Skills {
 			}
 			
 			sender.sendMessage(ChatColor.AQUA + "-- Total --");
-			sender.sendMessage(Integer.toString(c));
+			sender.sendMessage(ChatColor.GRAY + Integer.toString(c));
 			return true;
 		}
 		return false;
@@ -166,6 +173,37 @@ public class Skills {
 			return full;
 		}
 		return 0;
+	}
+
+	
+	public static void updateScoreboard(Player p) {
+		try {
+			ScoreboardManager manager = Bukkit.getScoreboardManager();
+
+			Scoreboard board = manager.getNewScoreboard();
+
+			Objective objective = board.registerNewObjective("test", "dummy");
+			objective.setDisplaySlot(DisplaySlot.SIDEBAR);
+
+			Set<String> types = getConfig().getConfigurationSection(p.getName() + ".").getKeys(false);
+
+			int c = 0;
+			for(String t : types){
+				c += getConfig().getInt(p.getName() + "." + t + ".lv");
+			}
+			
+			objective.setDisplayName("Skills (" + Integer.toString(c) + ")");
+
+			
+			for(String t : types){
+				objective.getScore(Bukkit.getOfflinePlayer(ChatColor.GRAY + t)).setScore(getConfig().getInt(p.getName() + "." + t + ".lv"));
+			}
+			
+			p.setScoreboard(board);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 }

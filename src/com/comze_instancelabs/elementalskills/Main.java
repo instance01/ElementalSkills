@@ -63,6 +63,7 @@ public class Main extends JavaPlugin implements Listener {
 					Player p = (Player) sender;
 					Skills.saveAllPlayerData(p);
 					Skills.displayPlayerData(sender, p.getName());
+					Skills.updateScoreboard(p);
 				}
 			}
 			return true;
