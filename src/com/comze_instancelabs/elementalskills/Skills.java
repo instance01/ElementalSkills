@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Set;
 
+import net.milkbowl.vault.economy.EconomyResponse;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -22,6 +24,32 @@ public class Skills {
 	public static HashMap<String, HashMap<String, Integer>> plvl = new HashMap<String, HashMap<String, Integer>>();
 	public static HashMap<String, String> pelem = new HashMap<String, String>();
 	
+
+	public static ArrayList<String> alltypes = new ArrayList<String>(Arrays.asList("mining", "alchemy", "melee", "archery", "travel", "wildlife", "eating", "herbalism", "enchanting", "karma"));
+	
+	public static HashMap<String, HashMap<String, Integer>> typeelements;
+    static
+    {
+    	typeelements = new HashMap<String, HashMap<String, Integer>>();
+    	typeelements.put("earth", new HashMap<String, Integer>(){{put("mining", 2);}});
+    	typeelements.put("earth", new HashMap<String, Integer>(){{put("alchemy", 1);}});
+    	typeelements.put("earth", new HashMap<String, Integer>(){{put("herbalism", 1);}});
+    	
+    	typeelements.put("water", new HashMap<String, Integer>(){{put("eating", 2);}});
+    	typeelements.put("water", new HashMap<String, Integer>(){{put("wildlife", 1);}});
+    	typeelements.put("water", new HashMap<String, Integer>(){{put("herbalism", 1);}});
+    	
+    	typeelements.put("air", new HashMap<String, Integer>(){{put("travel", 2);}});
+    	typeelements.put("air", new HashMap<String, Integer>(){{put("wildlife", 1);}});
+    	typeelements.put("air", new HashMap<String, Integer>(){{put("archery", 1);}});
+    	
+    	typeelements.put("fire", new HashMap<String, Integer>(){{put("melee", 2);}});
+    	typeelements.put("fire", new HashMap<String, Integer>(){{put("wildlife", 1);}});
+    	typeelements.put("fire", new HashMap<String, Integer>(){{put("archery", 1);}});
+    	
+    }
+	
+	
 	public Skills(Main m, FileConfiguration config){
 		this.m = m;
 		this.config = config;
@@ -29,7 +57,7 @@ public class Skills {
 	
 	public static int base_money = 10;
 	public static int base_xp = 10;
-	public static int base_xp_for_next_level = 150;
+	public static int base_xp_for_next_level = 100;
 	
 	public static FileConfiguration getConfig(){
 		return config;
@@ -41,6 +69,11 @@ public class Skills {
 	 * @param amplifier
 	 */
 	public static void addXP(Player p, int amplifier, String type){
+		String element = getPlayerElement(p);
+		int extra_for_element = 0;
+		if(typeelements.get(element).containsKey(type)){
+			extra_for_element = typeelements.get(element).get(type);
+		}
 		int lv = getPlayerLevel(p, type);
 		int oldxp = getPlayerXP(p, type);
 		int newxp = (int) (Math.round((lv + 1) * (1.2 + (0.02 * amplifier))) + 2 * amplifier + base_xp);
@@ -66,11 +99,13 @@ public class Skills {
 			}
 		}
 		
-		p.sendMessage(Integer.toString(newxp) + " added to " + Integer.toString(oldxp) + ". Needed for levelup: " + Integer.toString(needed));
+		//p.sendMessage(Integer.toString(newxp) + " added to " + Integer.toString(oldxp) + ". Needed for levelup: " + Integer.toString(needed));
 		
 		if(oldxp + newxp > needed){
 			addPlayerLevel(p, type);
-			//TODO add money
+			if(extra_for_element > 0){
+				addPlayerMoney(p, getPlayerLevel(p, type) / 2 * extra_for_element);
+			}
 		}
 	}
 	
@@ -79,7 +114,15 @@ public class Skills {
 		f.put(type, getPlayerLevel(p, type) + 1);
 		plvl.put(p.getName(), f);
 		saveAllPlayerData(p);
-		p.sendMessage("new level in " + type + ": " + Integer.toString(getPlayerLevel(p, type)));
+		p.sendMessage(ChatColor.AQUA + type + ": Level" + Integer.toString(getPlayerLevel(p, type)));
+	}
+	
+	public static void addPlayerMoney(Player p, int reward){
+    	EconomyResponse r = m.econ.depositPlayer(p.getName(), reward);
+		if(!r.transactionSuccess()) {
+        	p.sendMessage(String.format("An error occured: %s", r.errorMessage));
+        }
+		p.sendMessage(ChatColor.AQUA + "Your reward: " + ChatColor.GOLD + Integer.toString(reward) + ChatColor.AQUA + " Credits.");
 	}
 	
 	public static int getPlayerLevel(Player p, String type){
@@ -108,8 +151,7 @@ public class Skills {
 		m.saveConfig();
 	}
 	
-	static ArrayList<String> alltypes = new ArrayList<String>(Arrays.asList("mining", "alchemy", "melee", "archery", "travel", "wildlife", "eating", "herbalism", "enchanting", "karma"));
-	
+
 	public static void loadPlayerData(Player p){
 		if(getConfig().isSet(p.getName())){
 			Set<String> types = getConfig().getConfigurationSection(p.getName() + ".").getKeys(false);
