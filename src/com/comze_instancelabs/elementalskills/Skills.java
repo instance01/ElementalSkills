@@ -54,7 +54,6 @@ public class Skills {
 		f.put(type, oldxp + newxp);
 		pxp.put(p.getName(), f);
 		
-		//System.out.println(0.01F * amplifier);
 		if(amplifier > 0){
 			if(Math.random() > 0.5){
 				if(!((0.01F * amplifier) < 0)){
@@ -93,6 +92,11 @@ public class Skills {
 	
 	public static String getPlayerElement(Player p){
 		return pelem.get(p.getName());
+	}
+	
+	public static void setPlayerElement(Player p, String element){
+		pelem.put(p.getName(), element);
+		saveAllPlayerData(p);
 	}
 	
 	public static void saveAllPlayerData(Player p){
@@ -138,17 +142,17 @@ public class Skills {
 			sender.sendMessage(ChatColor.AQUA + "-- Elements --");
 			//TODO Elements
 			sender.sendMessage(ChatColor.AQUA + "-- Skills --");
-			sender.sendMessage(ChatColor.GRAY + Integer.toString(getConfig().getInt(p + ".mining.lv")) + ChatColor.DARK_GREEN + " ◆ " + ChatColor.AQUA + "Mining");
-			sender.sendMessage(ChatColor.GRAY + Integer.toString(getConfig().getInt(p + ".alchemy.lv")) + ChatColor.GOLD + " ◆ " + ChatColor.AQUA + "Alchemy");
-			sender.sendMessage(ChatColor.GRAY + Integer.toString(getConfig().getInt(p + ".melee.lv")) + ChatColor.DARK_RED + " ◆ " + ChatColor.AQUA + "Melee");
-			sender.sendMessage(ChatColor.GRAY + Integer.toString(getConfig().getInt(p + ".archery.lv")) + ChatColor.YELLOW + " ◆ " + ChatColor.AQUA + "Archery");
-			sender.sendMessage(ChatColor.GRAY + Integer.toString(getConfig().getInt(p + ".travel.lv")) + ChatColor.BLUE + " ◆ " + ChatColor.AQUA + "Travel");
-			sender.sendMessage(ChatColor.GRAY + Integer.toString(getConfig().getInt(p + ".wildlife.lv")) + ChatColor.DARK_AQUA + " ◆ " + ChatColor.AQUA + "Wildlife");
-			sender.sendMessage(ChatColor.GRAY + Integer.toString(getConfig().getInt(p + ".eating.lv")) + ChatColor.DARK_BLUE + " ◆ " + ChatColor.AQUA + "Eating");
-			sender.sendMessage(ChatColor.GRAY + Integer.toString(getConfig().getInt(p + ".herbalism.lv")) + ChatColor.GREEN + " ◆ " + ChatColor.AQUA + "Herbalism");
-			sender.sendMessage(ChatColor.GRAY + Integer.toString(getConfig().getInt(p + ".enchanting.lv")) + ChatColor.DARK_PURPLE + " ◆ " + ChatColor.AQUA + "Enchanting");
-			sender.sendMessage(ChatColor.GRAY + Integer.toString(getConfig().getInt(p + ".karma.lv")) + ChatColor.RED + " ◆ " + ChatColor.AQUA + "Karma");
-			
+			sender.sendMessage(ChatColor.GRAY + String.format("&8%03d", getConfig().getInt(p + ".mining.lv")).replaceAll("&", "§").replace(Integer.toString(getConfig().getInt(p + ".mining.lv")), "§7" + Integer.toString(getConfig().getInt(p + ".mining.lv"))) + ChatColor.DARK_GREEN + " ◆ " + ChatColor.AQUA + "Mining");
+			sender.sendMessage(ChatColor.GRAY + String.format("&8%03d", getConfig().getInt(p + ".alchemy.lv")).replaceAll("&", "§").replace(Integer.toString(getConfig().getInt(p + ".alchemy.lv")), "§7" + Integer.toString(getConfig().getInt(p + ".alchemy.lv"))) + ChatColor.GOLD + " ◆ " + ChatColor.AQUA + "Alchemy");
+			sender.sendMessage(ChatColor.GRAY + String.format("&8%03d", getConfig().getInt(p + ".melee.lv")).replaceAll("&", "§").replace(Integer.toString(getConfig().getInt(p + ".melee.lv")), "§7" + Integer.toString(getConfig().getInt(p + ".melee.lv"))) + ChatColor.DARK_RED + " ◆ " + ChatColor.AQUA + "Melee");
+			sender.sendMessage(ChatColor.GRAY + String.format("&8%03d", getConfig().getInt(p + ".archery.lv")).replaceAll("&", "§").replace(Integer.toString(getConfig().getInt(p + ".archery.lv")), "§7" + Integer.toString(getConfig().getInt(p + ".archery.lv"))) + ChatColor.YELLOW + " ◆ " + ChatColor.AQUA + "Archery");
+			sender.sendMessage(ChatColor.GRAY + String.format("&8%03d", getConfig().getInt(p + ".travel.lv")).replaceAll("&", "§").replace(Integer.toString(getConfig().getInt(p + ".travel.lv")), "§7" + Integer.toString(getConfig().getInt(p + ".travel.lv"))) + ChatColor.BLUE + " ◆ " + ChatColor.AQUA + "Travel");
+			sender.sendMessage(ChatColor.GRAY + String.format("&8%03d", getConfig().getInt(p + ".wildlife.lv")).replaceAll("&", "§").replace(Integer.toString(getConfig().getInt(p + ".wildlife.lv")), "§7" + Integer.toString(getConfig().getInt(p + ".wildlife.lv"))) + ChatColor.DARK_AQUA + " ◆ " + ChatColor.AQUA + "Wildlife");
+			sender.sendMessage(ChatColor.GRAY + String.format("&8%03d", getConfig().getInt(p + ".eating.lv")).replaceAll("&", "§").replace(Integer.toString(getConfig().getInt(p + ".eating.lv")), "§7" + Integer.toString(getConfig().getInt(p + ".eating.lv"))) + ChatColor.DARK_BLUE + " ◆ " + ChatColor.AQUA + "Eating");
+			sender.sendMessage(ChatColor.GRAY + String.format("&8%03d", getConfig().getInt(p + ".herbalism.lv")).replaceAll("&", "§").replace(Integer.toString(getConfig().getInt(p + ".herbalism.lv")), "§7" + Integer.toString(getConfig().getInt(p + ".herbalism.lv"))) + ChatColor.GREEN + " ◆ " + ChatColor.AQUA + "Herbalism");
+			sender.sendMessage(ChatColor.GRAY + String.format("&8%03d", getConfig().getInt(p + ".enchanting.lv")).replaceAll("&", "§").replace(Integer.toString(getConfig().getInt(p + ".enchanting.lv")), "§7" + Integer.toString(getConfig().getInt(p + ".enchanting.lv"))) + ChatColor.DARK_PURPLE + " ◆ " + ChatColor.AQUA + "Enchanting");
+			sender.sendMessage(ChatColor.GRAY + String.format("&8%03d", getConfig().getInt(p + ".karma.lv")).replaceAll("&", "§").replace(Integer.toString(getConfig().getInt(p + ".karma.lv")), "§7" + Integer.toString(getConfig().getInt(p + ".karma.lv"))) + ChatColor.RED + " ◆ " + ChatColor.AQUA + "Karma");
+
 			int c = 0;
 			for(String t : types){
 				c += getConfig().getInt(p + "." + t + ".lv");
@@ -192,7 +196,7 @@ public class Skills {
 				c += getConfig().getInt(p.getName() + "." + t + ".lv");
 			}
 			
-			objective.setDisplayName("Skills (" + Integer.toString(c) + ")");
+			objective.setDisplayName(ChatColor.AQUA + "Skills (" + Integer.toString(c) + ")");
 
 			
 			for(String t : types){

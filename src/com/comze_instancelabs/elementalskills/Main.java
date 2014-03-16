@@ -1,16 +1,26 @@
 package com.comze_instancelabs.elementalskills;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import net.milkbowl.vault.economy.Economy;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -25,6 +35,10 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerShearEntityEvent;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scoreboard.DisplaySlot;
+import org.bukkit.scoreboard.Objective;
+import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.ScoreboardManager;
 
 public class Main extends JavaPlugin implements Listener {
 
@@ -70,15 +84,73 @@ public class Main extends JavaPlugin implements Listener {
 		} else if (cmd.getName().equalsIgnoreCase("element")) {
 			if (sender instanceof Player) {
 				Player p = (Player) sender;
-				sender.sendMessage(Skills.getPlayerElement(p));
+				if (args.length > 0) {
+					Skills.setPlayerElement(p, args[0]);
+					sender.sendMessage(ChatColor.AQUA + "Your main element is " + args[0] + " now.");
+					return true;
+				}
+				sender.sendMessage(ChatColor.AQUA + "You can change your element by typing /element [type], where [type] can be water, air, earth and fire.");
+				sender.sendMessage(ChatColor.GRAY + Skills.getPlayerElement(p));
 			}
 			return true;
 		} else if (cmd.getName().equalsIgnoreCase("highscore")) {
 			// Skills.getFullScore(p);
 			// TODO highscore
+
+			if (sender instanceof Player) {
+				Player p = (Player) sender;
+
+				Map<String, Integer> pscores = new HashMap<String, Integer>();
+				Set<String> players = getConfig().getKeys(false);
+				for (String t : players) {
+					pscores.put(t, Skills.getFullScore(t));
+				}
+
+				Map<String, Integer> pscores_s = sortByValue(pscores);
+
+				ScoreboardManager manager = Bukkit.getScoreboardManager();
+				Scoreboard board = manager.getNewScoreboard();
+				Objective objective = board.registerNewObjective("test", "dummy");
+				objective.setDisplaySlot(DisplaySlot.SIDEBAR);
+
+				objective.setDisplayName(ChatColor.AQUA + "Top (" + Integer.toString(Skills.getFullScore(p.getName())) + ")");
+
+				int c = 0;
+				for (Map.Entry<String, Integer> entry : pscores_s.entrySet()) {
+					c++;
+					if(c > 10){
+						break;
+					}
+					if (entry.getKey().length() < 15) {
+						objective.getScore(Bukkit.getOfflinePlayer(ChatColor.GRAY + entry.getKey())).setScore(entry.getValue());
+					} else {
+						objective.getScore(Bukkit.getOfflinePlayer(ChatColor.GRAY + entry.getKey().substring(0, entry.getKey().length() - 3))).setScore(entry.getValue());
+					}
+					p.sendMessage(ChatColor.GRAY + Integer.toString(entry.getValue()) + ChatColor.AQUA + " - " + ChatColor.GRAY + entry.getKey());
+				}
+
+				p.setScoreboard(board);
+
+			}
 			return true;
 		}
 		return false;
+	}
+
+	public static Map sortByValue(Map map) {
+		List list = new LinkedList(map.entrySet());
+		Collections.sort(list, new Comparator() {
+			public int compare(Object o1, Object o2) {
+				return ((Comparable) ((Map.Entry) (o1)).getValue()).compareTo(((Map.Entry) (o2)).getValue());
+			}
+		});
+
+		Map result = new LinkedHashMap();
+		for (Iterator it = list.iterator(); it.hasNext();) {
+			Map.Entry entry = (Map.Entry) it.next();
+			result.put(entry.getKey(), entry.getValue());
+		}
+		return result;
 	}
 
 	private boolean setupEconomy() {
