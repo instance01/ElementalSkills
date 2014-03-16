@@ -1,6 +1,5 @@
 package com.comze_instancelabs.elementalskills;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -25,12 +24,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.enchantment.EnchantItemEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityTameEvent;
 import org.bukkit.event.inventory.BrewEvent;
 import org.bukkit.event.inventory.FurnaceExtractEvent;
 import org.bukkit.event.player.PlayerEggThrowEvent;
+import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerShearEntityEvent;
@@ -254,8 +255,7 @@ public class Main extends JavaPlugin implements Listener {
 						if (((Arrow) e.getDamager()).getShooter() instanceof Player) {
 							Player damager = (Player) (((Arrow) e.getDamager()).getShooter());
 							Entity damaged = e.getEntity();
-							damager.sendMessage("test");
-							Skills.addXP(damager, (int) (damaged.getLocation().distance(damager.getLocation()) / 15), "archery");
+							Skills.addXP(damager, (int) (damaged.getLocation().distance(damager.getLocation()) / 12), "archery");
 						}
 					} else {
 						Player damager = (Player) e.getDamager();
@@ -290,5 +290,50 @@ public class Main extends JavaPlugin implements Listener {
 			Skills.addXP(p, -2, "wildlife");
 		}
 	}
+	
+	/*@EventHandler
+    public void onPlayerInteractEvent(PlayerInteractEvent e){
+    //get all the relative values for comparation
+    final int l = e.getPlayer().getFoodLevel();
+    final Player p = e.getPlayer();
+    final int a = p.getItemInHand().getAmount();
+    ItemStack i = e.getPlayer().getItemInHand();
+    if(i.getType().equals(Material.COOKIE) || i.getType().equals(Material.COOKIE)){
+    	Bukkit.getScheduler().runTaskLater(this, new Runnable(){
+    		public void run(){
+    			if((p.getFoodLevel() > l || p.getFoodLevel() == 20) && p.getItemInHand().getAmount() < a){
+    				
+				}
+    		}
+    	}, 100L);
+    }
+    }*/
+	
+	// eating
+	@EventHandler
+	public void onPlayerEat(PlayerItemConsumeEvent event){
+		if(event.getItem().getType() != Material.POTION && event.getItem().getType() != Material.MILK_BUCKET){
+			Skills.addXP(event.getPlayer(), 1, "eating");
+		}
+	}
 
+	// enchanting
+	@EventHandler
+	public void onEnchant(EnchantItemEvent event){
+		if(event.getItem().getType().toString().toLowerCase().contains("diamond")){
+			if(event.getExpLevelCost() > 25){
+				Skills.addXP(event.getEnchanter(), 9, "enchanting");
+			}else if(event.getExpLevelCost() < 25 && event.getExpLevelCost() > 10){
+				Skills.addXP(event.getEnchanter(), 3, "enchanting");
+			}else{
+				Skills.addXP(event.getEnchanter(), 1, "enchanting");
+			}
+		}else{
+			if(event.getExpLevelCost() > 20){
+				Skills.addXP(event.getEnchanter(), 2, "enchanting");
+			}else{
+				Skills.addXP(event.getEnchanter(), -1, "enchanting");
+			}
+		}
+	}
 }
