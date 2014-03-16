@@ -29,57 +29,57 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class Main extends JavaPlugin implements Listener {
 
 	public Economy econ;
-	
-	public void onEnable(){
+
+	public void onEnable() {
 		getServer().getPluginManager().registerEvents(this, this);
-		
+
 		if (!setupEconomy()) {
 			getLogger().severe(String.format("[%s] - No iConomy dependency found! Disabling Economy.", getDescription().getName()));
 		}
-		
+
 		Skills s = new Skills(this, getConfig());
-		
-		Bukkit.getScheduler().runTaskLater(this, new Runnable(){
-			public void run(){
-				for(Player p : Bukkit.getOnlinePlayers()){
+
+		Bukkit.getScheduler().runTaskLater(this, new Runnable() {
+			public void run() {
+				for (Player p : Bukkit.getOnlinePlayers()) {
 					Skills.loadPlayerData(p);
 				}
 			}
 		}, 20L);
 	}
-	
-	public void onDisable(){
-		for(Player p : Bukkit.getOnlinePlayers()){
+
+	public void onDisable() {
+		for (Player p : Bukkit.getOnlinePlayers()) {
 			Skills.saveAllPlayerData(p);
 		}
 	}
-	
+
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		if(cmd.getName().equalsIgnoreCase("skill")){
-			if(args.length > 0){
+		if (cmd.getName().equalsIgnoreCase("skill")) {
+			if (args.length > 0) {
 				Skills.displayPlayerData(sender, args[0]);
-			}else{
-				if(sender instanceof Player){
+			} else {
+				if (sender instanceof Player) {
 					Player p = (Player) sender;
 					Skills.saveAllPlayerData(p);
 					Skills.displayPlayerData(sender, p.getName());
 				}
 			}
 			return true;
-		}else if(cmd.getName().equalsIgnoreCase("element")){
-			if(sender instanceof Player){
+		} else if (cmd.getName().equalsIgnoreCase("element")) {
+			if (sender instanceof Player) {
 				Player p = (Player) sender;
 				sender.sendMessage(Skills.getPlayerElement(p));
 			}
 			return true;
-		}else if(cmd.getName().equalsIgnoreCase("highscore")){
-			//Skills.getFullScore(p);
-			//TODO highscore
+		} else if (cmd.getName().equalsIgnoreCase("highscore")) {
+			// Skills.getFullScore(p);
+			// TODO highscore
 			return true;
 		}
 		return false;
 	}
-	
+
 	private boolean setupEconomy() {
 		if (getServer().getPluginManager().getPlugin("Vault") == null) {
 			return false;
@@ -91,56 +91,54 @@ public class Main extends JavaPlugin implements Listener {
 		econ = rsp.getProvider();
 		return econ != null;
 	}
-	
-	
+
 	@EventHandler
-	public void onPlayerJoin(PlayerJoinEvent event){
+	public void onPlayerJoin(PlayerJoinEvent event) {
 		Skills.loadPlayerData(event.getPlayer());
 	}
-	
-	
+
 	// Mining
 	@EventHandler
-	public void onBlockBreak(BlockBreakEvent event){
+	public void onBlockBreak(BlockBreakEvent event) {
 		Player p = event.getPlayer();
 		Material m = event.getBlock().getType();
-		if(m == Material.STONE){
+		if (m == Material.STONE) {
 			Skills.addXP(p, -8, "mining");
-		}else if(m == Material.SANDSTONE){
+		} else if (m == Material.SANDSTONE) {
 			Skills.addXP(p, -4, "mining");
-		}else if(m == Material.COAL_ORE){
+		} else if (m == Material.COAL_ORE) {
 			Skills.addXP(p, -1, "mining");
-		}else if(m == Material.IRON_ORE){
+		} else if (m == Material.IRON_ORE) {
 			Skills.addXP(p, 1, "mining");
-		}else if(m == Material.GOLD_ORE){
+		} else if (m == Material.GOLD_ORE) {
 			Skills.addXP(p, 1, "mining");
-		}else if(m == Material.REDSTONE_ORE){
+		} else if (m == Material.REDSTONE_ORE) {
 			Skills.addXP(p, 0, "mining");
-		}else if(m == Material.LAPIS_ORE){
+		} else if (m == Material.LAPIS_ORE) {
 			Skills.addXP(p, 3, "mining");
-		}else if(m == Material.DIAMOND_ORE){
+		} else if (m == Material.DIAMOND_ORE) {
 			Skills.addXP(p, 5, "mining");
-		}else if(m == Material.EMERALD_ORE){
+		} else if (m == Material.EMERALD_ORE) {
 			Skills.addXP(p, 6, "mining");
-		}else if(m == Material.QUARTZ_ORE){
+		} else if (m == Material.QUARTZ_ORE) {
 			Skills.addXP(p, 0, "mining");
-		}else if(m == Material.GLOWSTONE){
+		} else if (m == Material.GLOWSTONE) {
 			Skills.addXP(p, -1, "mining");
 		}
 	}
-	
 
+	// TODO MetaData
 	// Alchemy
 	@EventHandler
 	public void onBrew(BrewEvent event) {
 		Location l = event.getBlock().getLocation();
-		for(Player p : Bukkit.getOnlinePlayers()){
-			if(p.getLocation().distance(l) < 5){
+		for (Player p : Bukkit.getOnlinePlayers()) {
+			if (p.getLocation().distance(l) < 5) {
 				Skills.addXP(p, -2, "alchemy");
 			}
 		}
 	}
-	
+
 	// Alchemy
 	@EventHandler
 	public void onFurnaceExtract(FurnaceExtractEvent event) {
@@ -153,9 +151,9 @@ public class Main extends JavaPlugin implements Listener {
 		} else if (m == Material.QUARTZ) {
 			Skills.addXP(p, event.getItemAmount() / 14, "alchemy");
 		} else if (m == Material.STONE) {
-			if(event.getItemAmount() < 33){
+			if (event.getItemAmount() < 33) {
 				Skills.addXP(p, -4, "alchemy");
-			}else{
+			} else {
 				Skills.addXP(p, -1, "alchemy");
 			}
 		} else if (m == Material.COOKED_BEEF || m == Material.COOKED_CHICKEN || m == Material.COOKED_FISH || m == Material.BAKED_POTATO || m == Material.GRILLED_PORK) {
@@ -164,13 +162,12 @@ public class Main extends JavaPlugin implements Listener {
 			Skills.addXP(p, event.getItemAmount() / 20, "alchemy");
 		}
 	}
-	
+
 	@EventHandler
-	public void onPlayerMove(PlayerMoveEvent event){
-		//TODO travel
+	public void onPlayerMove(PlayerMoveEvent event) {
+		// TODO travel
 	}
 
-	
 	// Archery
 	@EventHandler
 	public void onEntityDeath(EntityDeathEvent event) {
@@ -193,22 +190,21 @@ public class Main extends JavaPlugin implements Listener {
 			}
 		}
 	}
-	
-	
+
 	// Wildlife
 	@EventHandler
-	public void onTame(EntityTameEvent event){
-		if(event.getOwner() instanceof Player){
+	public void onTame(EntityTameEvent event) {
+		if (event.getOwner() instanceof Player) {
 			Player p = (Player) event.getOwner();
 			Skills.addXP(p, 1, "wildlife");
 		}
 	}
-	
+
 	// Wildlife
 	@EventHandler
-	public void onShear(PlayerShearEntityEvent event){
+	public void onShear(PlayerShearEntityEvent event) {
 		Player p = event.getPlayer();
 		Skills.addXP(p, -2, "wildlife");
 	}
-	
+
 }

@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Set;
 
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -128,9 +129,26 @@ public class Skills {
 			Set<String> types = getConfig().getConfigurationSection(p + ".").getKeys(false);
 			HashMap<String, Integer> lv = new HashMap<String, Integer>();
 			HashMap<String, Integer> xp = new HashMap<String, Integer>();
+			
+			sender.sendMessage(ChatColor.AQUA + "-- Skills --");
+			sender.sendMessage(ChatColor.AQUA + "Mining" + ChatColor.DARK_GREEN + " ◆ " + Integer.toString(getConfig().getInt(p + ".mining.lv")));
+			sender.sendMessage(ChatColor.AQUA + "Alchemy" + ChatColor.GOLD + " ◆ " + Integer.toString(getConfig().getInt(p + ".alchemy.lv")));
+			sender.sendMessage(ChatColor.AQUA + "Melee" + ChatColor.DARK_RED + " ◆ " + Integer.toString(getConfig().getInt(p + ".melee.lv")));
+			sender.sendMessage(ChatColor.AQUA + "Archery" + ChatColor.YELLOW + " ◆ " + Integer.toString(getConfig().getInt(p + ".archery.lv")));
+			sender.sendMessage(ChatColor.AQUA + "Travel" + ChatColor.BLUE + " ◆ " + Integer.toString(getConfig().getInt(p + ".travel.lv")));
+			sender.sendMessage(ChatColor.AQUA + "Wildlife" + ChatColor.DARK_AQUA + " ◆ " + Integer.toString(getConfig().getInt(p + ".wildlife.lv")));
+			sender.sendMessage(ChatColor.AQUA + "Eating" + ChatColor.DARK_BLUE + " ◆ " + Integer.toString(getConfig().getInt(p + ".eating.lv")));
+			sender.sendMessage(ChatColor.AQUA + "Herbalism" + ChatColor.GREEN + " ◆ " + Integer.toString(getConfig().getInt(p + ".herbalism.lv")));
+			sender.sendMessage(ChatColor.AQUA + "Enchanting" + ChatColor.DARK_PURPLE + " ◆ " + Integer.toString(getConfig().getInt(p + ".enchanting.lv")));
+			sender.sendMessage(ChatColor.AQUA + "Karma" + ChatColor.RED + " ◆ " + Integer.toString(getConfig().getInt(p + ".karma.lv")));
+			
+			int c = 0;
 			for(String t : types){
-				sender.sendMessage(t + " : " + Integer.toString(getConfig().getInt(p + "." + t + ".lv")));
+				c += getConfig().getInt(p + "." + t + ".lv");
 			}
+			
+			sender.sendMessage(ChatColor.AQUA + "-- Total --");
+			sender.sendMessage(Integer.toString(c));
 			return true;
 		}
 		return false;
